@@ -6,6 +6,7 @@ import { capabilities, contactDetails, experiences, portfolioProjects } from '@/
 
 const portraitTags = ['LLM', 'Diffusion', 'Agent', 'Python', 'TypeScript', 'Node.js', 'CSharp'];
 type ContactTone = 'email' | 'wechat';
+const assetPath = (path: string) => `${import.meta.env.BASE_URL}${path.replace(/^\/+/, '')}`;
 
 function renderCapabilityDescription(description: string) {
   return description.split(/(\*\*[^*]+\*\*|\n)/g).map((part, index) =>
@@ -115,7 +116,7 @@ export default function ResumePage() {
 
       <section className="hero" id="top">
         <div className="portrait-card">
-          <img src="/portrait-coder.png" alt="刘纯涛黑白肖像" />
+          <img src={assetPath('/portrait-coder.png')} alt="刘纯涛黑白肖像" />
           <div className="portrait-gradient" aria-hidden="true" />
           <p className="portrait-hello">HELLO.</p>
           <p className="portrait-name">
@@ -162,7 +163,7 @@ export default function ResumePage() {
                   onClick={() => copyContact('邮箱', contactDetails.email, 'email')}
                   aria-label="复制邮箱地址"
                 >
-                  <img className="contact-icon" src="/email.png" alt="" aria-hidden="true" />
+                  <img className="contact-icon" src={assetPath('/email.png')} alt="" aria-hidden="true" />
                   <small>EMAIL</small>
                   <strong>{contactDetails.email}</strong>
                   <span className="contact-arrow">复制</span>
@@ -173,7 +174,7 @@ export default function ResumePage() {
                   onClick={() => copyContact('微信', contactDetails.wechat, 'wechat')}
                   aria-label="复制微信号"
                 >
-                  <img className="contact-icon" src="/wechat.png" alt="" aria-hidden="true" />
+                  <img className="contact-icon" src={assetPath('/wechat.png')} alt="" aria-hidden="true" />
                   <small>WECHAT</small>
                   <strong>{contactDetails.wechat}</strong>
                   <span className="contact-arrow">复制</span>
@@ -263,11 +264,11 @@ export default function ResumePage() {
               >
                 <img
                   className="project-media-backdrop"
-                  src={project.image}
+                  src={assetPath(project.image)}
                   alt=""
                   aria-hidden="true"
                 />
-                <img className="project-media-image" src={project.image} alt={project.imageAlt} />
+                <img className="project-media-image" src={assetPath(project.image)} alt={project.imageAlt} />
                 <span className="project-media-overlay" />
                 <span className="project-slide-index">0{index + 1}</span>
                 <strong>{project.title}</strong>
@@ -403,7 +404,7 @@ export default function ResumePage() {
             ×
           </button>
           <figure>
-            <img src={previewProject.image} alt={previewProject.imageAlt} />
+            <img src={assetPath(previewProject.image)} alt={previewProject.imageAlt} />
             <figcaption>
               <span>{previewProject.category}</span>
               <strong>{previewProject.title}</strong>
