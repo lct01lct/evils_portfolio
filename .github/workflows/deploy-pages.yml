@@ -36,14 +36,10 @@ jobs:
       - name: Build static site
         run: npm run build:github
 
-      - name: Disable Jekyll processing
-        run: touch dist/client/.nojekyll
-
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
         with:
           path: dist/client
-          include-hidden-files: true
 
   deploy:
     environment:
