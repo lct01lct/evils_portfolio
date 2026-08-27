@@ -43,19 +43,7 @@ export default defineConfig(async () => {
   // Wrangler snapshots its log path while the Cloudflare plugin is imported.
   const { cloudflare } = await import("@cloudflare/vite-plugin");
 
-  const resumePrivate = process.env.RESUME_PRIVATE === "true";
-  const resumePersonalDetails = resumePrivate
-      ? {
-        email: process.env.RESUME_EMAIL ?? "",
-        wechat: process.env.RESUME_WECHAT ?? "",
-      }
-    : null;
-
   return {
-    define: {
-      __RESUME_PRIVATE__: JSON.stringify(resumePrivate),
-      __RESUME_PERSONAL_DETAILS__: JSON.stringify(resumePersonalDetails),
-    },
     server: isCodexSeatbeltSandbox
       ? { watch: { useFsEvents: false, usePolling: true } }
       : undefined,

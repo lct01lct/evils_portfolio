@@ -35,8 +35,8 @@ export default function CapabilityRadar({ capabilities }: CapabilityRadarProps) 
       context.clearRect(0, 0, rect.width, rect.height);
 
       const centerX = rect.width / 2;
-      const centerY = rect.height / 2 + 8;
-      const radius = Math.min(rect.width, rect.height) * 0.31;
+      const centerY = rect.height / 2 - 2;
+      const radius = Math.min(rect.width, rect.height) * 0.37;
       const step = (Math.PI * 2) / radarCapabilities.length;
       const start = -Math.PI / 2;
 
@@ -82,7 +82,7 @@ export default function CapabilityRadar({ capabilities }: CapabilityRadarProps) 
 
       radarCapabilities.forEach((capability, index) => {
         const current = point(index, capability.score / 5);
-        const label = point(index, 1.12);
+        const label = point(index, 1.1);
         context.beginPath();
         context.arc(current.x, current.y, 4, 0, Math.PI * 2);
         context.fillStyle = '#1f4eff';

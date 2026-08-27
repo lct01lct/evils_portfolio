@@ -13,7 +13,7 @@ async function render() {
   );
 }
 
-test('visitor build renders the Coder portfolio content', async () => {
+test('build renders the Coder portfolio content', async () => {
   const response = await render();
   assert.equal(response.status, 200);
   assert.match(response.headers.get('content-type') ?? '', /^text\/html\b/i);
@@ -28,12 +28,12 @@ test('visitor build renders the Coder portfolio content', async () => {
   assert.match(html, /保存为 PDF/);
 });
 
-test('visitor build excludes private contact data and controls', async () => {
+test('build renders public contact data without a view switcher', async () => {
   const response = await render();
   const html = await response.text();
 
-  assert.doesNotMatch(html, /1786215856@qq\.com/);
-  assert.doesNotMatch(html, />evils_you</);
-  assert.doesNotMatch(html, /PRIVATE \/ CONTACT/);
+  assert.match(html, /1786215856@qq\.com/);
+  assert.match(html, />evils_you</);
+  assert.match(html, />CONTACT</);
   assert.doesNotMatch(html, /简历视图切换/);
 });

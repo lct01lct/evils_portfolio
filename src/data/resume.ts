@@ -1,33 +1,38 @@
 import type { Capability, ExperienceEntry, PortfolioProject } from '@/types/resume';
 
+export const contactDetails = {
+  email: '1786215856@qq.com',
+  wechat: 'evils_you',
+} as const;
+
 export const capabilities: readonly Capability[] = [
   {
     title: 'All in Agent',
     radarLabel: 'Agent',
     score: 4.5,
     description:
-      '全力探索未来 Agent 架构，\n研究**下一代 Skills**、可控**长线执行**稳定性、\n推行高可用性 **benchmark**，为软件生态赋能。',
+      '全力探索未来 Agent 架构，研究**下一代 Skills**、可控**长线执行**稳定性，推行高可用性 **benchmark**，为软件生态赋能。',
   },
   {
     title: 'AI 基础',
     radarLabel: 'AI',
     score: 4,
     description:
-      '专注于**多模态**领域，\n研究原生少步 **Diffusion / Flow** 范式，\n持续关注**生成理解统一**模型前沿。',
+      '专注于**多模态**领域，研究原生少步 **Diffusion / Flow** 范式，持续关注**生成理解统一**模型前沿。',
   },
 
   {
     title: '工程能力',
     radarLabel: '前端全栈',
     score: 4.5,
-    description: '掌握主流**前端**技术，并具有**全栈**视野，\n重视设计模式、编码规范与系统架构。',
+    description: '掌握主流**前端**技术，并具有**全栈**视野，重视设计模式、编码规范与系统架构。',
   },
   {
     title: '游戏社区',
     radarLabel: '游戏',
     score: 3.5,
     description:
-      '持续为**《星露谷物语》**、**《饥荒》**社区贡献 **模组**，\n了解游戏开发流程、系统设计与玩家体验。',
+      '持续为**《星露谷物语》**、**《饥荒》**社区贡献 **模组**，了解游戏开发流程、系统设计与玩家体验。',
   },
   {
     title: '产品能力',

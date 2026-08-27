@@ -1,8 +1,3 @@
-export type PersonalDetails = {
-  email: string;
-  wechat: string;
-};
-
 export type Capability = {
   title: string;
   description: string;

@@ -1,13 +1,12 @@
 'use client';
 
-import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import CapabilityRadar from '@/components/resume/CapabilityRadar';
-import { capabilities, experiences, portfolioProjects } from '@/data/resume';
-import type { PersonalDetails } from '@/types/resume';
-
-type ResumePageProps = { privateBuild: boolean; personalDetails: PersonalDetails | null };
+import { capabilities, contactDetails, experiences, portfolioProjects } from '@/data/resume';
 
 const portraitTags = ['LLM', 'Diffusion', 'Agent', 'Python', 'TypeScript', 'Node.js', 'CSharp'];
+type ContactTone = 'email' | 'wechat';
+
 function renderCapabilityDescription(description: string) {
   return description.split(/(\*\*[^*]+\*\*|\n)/g).map((part, index) =>
     part === '\n' ? (
@@ -34,15 +33,14 @@ function formatTimelineDate([year, month]: readonly [number, number]) {
   return `${year}.${String(month).padStart(2, '0')}`;
 }
 
-export default function ResumePage({ privateBuild, personalDetails }: ResumePageProps) {
-  const [showPrivate, setShowPrivate] = useState(privateBuild);
+export default function ResumePage() {
   const [activeProjectIndex, setActiveProjectIndex] = useState(0);
   const [previewProjectIndex, setPreviewProjectIndex] = useState<number | null>(null);
-  const [switcherPosition, setSwitcherPosition] = useState<{ x: number; y: number } | null>(null);
-  const [copyNotice, setCopyNotice] = useState('');
-  const switcherDragOffset = useRef({ x: 0, y: 0, width: 0, height: 0 });
+  const [copyNotice, setCopyNotice] = useState<{
+    message: string;
+    tone: ContactTone;
+  } | null>(null);
   const copyNoticeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const privateVisible = privateBuild && showPrivate && personalDetails !== null;
   const activeProject = portfolioProjects[activeProjectIndex];
   const previewProject =
     previewProjectIndex === null ? null : portfolioProjects[previewProjectIndex];
@@ -53,7 +51,7 @@ export default function ResumePage({ privateBuild, personalDetails }: ResumePage
     );
   const showNextProject = () =>
     setActiveProjectIndex(index => (index + 1) % portfolioProjects.length);
-  const copyContact = async (label: string, value: string) => {
+  const copyContact = async (label: string, value: string, tone: ContactTone) => {
     try {
       await navigator.clipboard.writeText(value);
     } catch {
@@ -67,42 +65,10 @@ export default function ResumePage({ privateBuild, personalDetails }: ResumePage
       textArea.remove();
     }
 
-    setCopyNotice(`${label}已复制`);
+    setCopyNotice({ message: `${label}已复制`, tone });
     if (copyNoticeTimer.current) clearTimeout(copyNoticeTimer.current);
-    copyNoticeTimer.current = setTimeout(() => setCopyNotice(''), 1800);
+    copyNoticeTimer.current = setTimeout(() => setCopyNotice(null), 1800);
   };
-  const startSwitcherDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
-    const switcher = event.currentTarget.parentElement;
-    if (!switcher) return;
-    const rect = switcher.getBoundingClientRect();
-    switcherDragOffset.current = {
-      x: event.clientX - rect.left,
-      y: event.clientY - rect.top,
-      width: rect.width,
-      height: rect.height,
-    };
-    event.currentTarget.setPointerCapture(event.pointerId);
-  };
-  const moveSwitcher = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
-    const offset = switcherDragOffset.current;
-    setSwitcherPosition({
-      x: Math.min(
-        Math.max(8, event.clientX - offset.x),
-        Math.max(8, window.innerWidth - offset.width - 8)
-      ),
-      y: Math.min(
-        Math.max(8, event.clientY - offset.y),
-        Math.max(8, window.innerHeight - offset.height - 8)
-      ),
-    });
-  };
-  const stopSwitcherDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-      event.currentTarget.releasePointerCapture(event.pointerId);
-    }
-  };
-
   useEffect(() => {
     if (previewProjectIndex === null) return;
     const previousOverflow = document.body.style.overflow;
@@ -185,37 +151,35 @@ export default function ResumePage({ privateBuild, personalDetails }: ResumePage
             </p>
           </div>
 
-          {privateVisible && personalDetails && (
-            <section className="contact-area" aria-label="私人联系方式">
+            <section className="contact-area" aria-label="联系方式">
               <div className="contact-heading">
-                <span>PRIVATE / CONTACT</span>
+                <span>CONTACT</span>
               </div>
               <div className="contact-grid">
                 <button
                   className="contact-card contact-email"
                   type="button"
-                  onClick={() => copyContact('邮箱', personalDetails.email)}
+                  onClick={() => copyContact('邮箱', contactDetails.email, 'email')}
                   aria-label="复制邮箱地址"
                 >
                   <img className="contact-icon" src="/email.png" alt="" aria-hidden="true" />
                   <small>EMAIL</small>
-                  <strong>{personalDetails.email}</strong>
+                  <strong>{contactDetails.email}</strong>
                   <span className="contact-arrow">复制</span>
                 </button>
                 <button
                   className="contact-card contact-wechat"
                   type="button"
-                  onClick={() => copyContact('微信', personalDetails.wechat)}
+                  onClick={() => copyContact('微信', contactDetails.wechat, 'wechat')}
                   aria-label="复制微信号"
                 >
                   <img className="contact-icon" src="/wechat.png" alt="" aria-hidden="true" />
                   <small>WECHAT</small>
-                  <strong>{personalDetails.wechat}</strong>
+                  <strong>{contactDetails.wechat}</strong>
                   <span className="contact-arrow">复制</span>
                 </button>
               </div>
             </section>
-          )}
         </div>
 
         <a className="scroll-cue" href="#skills" aria-label="向下滚动至技术能力">
@@ -244,9 +208,9 @@ export default function ResumePage({ privateBuild, personalDetails }: ResumePage
           <div className="capability-list">
             {capabilities.map((capability, index) => (
               <article className="capability-card" key={capability.title}>
-                <div className="capability-number">0{index + 1}</div>
                 <div>
                   <div className="capability-title-row">
+                    <span className="capability-number">0{index + 1}</span>
                     <h3>{capability.title}</h3>
                   </div>
                   <p>{renderCapabilityDescription(capability.description)}</p>
@@ -448,48 +412,12 @@ export default function ResumePage({ privateBuild, personalDetails }: ResumePage
         </div>
       )}
 
-      {privateBuild && (
-        <aside
-          className="view-switcher"
-          aria-label="简历视图切换"
-          style={
-            switcherPosition
-              ? {
-                  left: switcherPosition.x,
-                  top: switcherPosition.y,
-                  right: 'auto',
-                  bottom: 'auto',
-                }
-              : undefined
-          }
-        >
-          <div
-            className="switcher-drag-handle"
-            title="拖拽移动"
-            onPointerDown={startSwitcherDrag}
-            onPointerMove={moveSwitcher}
-            onPointerUp={stopSwitcherDrag}
-            onPointerCancel={stopSwitcherDrag}
-          >
-            <span>当前视图</span>
-            <strong>{showPrivate ? '私有' : '访客预览'}</strong>
-          </div>
-          <button
-            type="button"
-            aria-pressed={showPrivate}
-            onClick={() => setShowPrivate(value => !value)}
-          >
-            切换到{showPrivate ? '访客' : '私有'}
-          </button>
-        </aside>
-      )}
-
       <div
-        className={`copy-toast${copyNotice ? ' is-visible' : ''}`}
+        className={`copy-toast copy-toast-${copyNotice?.tone ?? 'email'}${copyNotice ? ' is-visible' : ''}`}
         role="status"
         aria-live="polite"
       >
-        {copyNotice}
+        {copyNotice?.message}
       </div>
     </main>
   );
